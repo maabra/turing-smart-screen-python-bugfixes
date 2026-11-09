@@ -21,17 +21,35 @@
 # Configure logging format
 import locale
 import logging
+import os
+from pathlib import Path
 from logging.handlers import RotatingFileHandler
 
 # use current locale for date/time formatting in logs
 locale.setlocale(locale.LC_ALL, '')
 
+def _log_handlers():
+    handlers = [logging.StreamHandler()]
+    if os.name == "nt":
+        # Installed applications commonly live in Program Files, which is not
+        # writable by a normal user. Keep logs in that user's local app data.
+        log_dir = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local")) / "Turing System Monitor"
+        log_path = log_dir / "log.log"
+    else:
+        log_path = Path.cwd() / "log.log"
+
+    try:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        handlers.insert(0, RotatingFileHandler(log_path, maxBytes=1000000, backupCount=0))
+    except OSError:
+        # Logging to the console is still useful when file logging is unavailable.
+        pass
+    return handlers
+
+
 logging.basicConfig(  # format='%(asctime)s [%(levelname)s] %(message)s in %(pathname)s:%(lineno)d',
     format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        RotatingFileHandler("log.log", maxBytes=1000000, backupCount=0),  # Log in textfile max 1MB
-        logging.StreamHandler()  # Log also in console
-    ],
+    handlers=_log_handlers(),
     datefmt='%x %X')
 
 logger = logging.getLogger('turing')
