@@ -15,7 +15,8 @@ static_images:
     HEIGHT: 480
 static_text:
   CPU_MODEL:
-    TEXT: Your CPU model here
+    TEXT: AMD Ryzen 7 5700X3D
+
     X: 50
     Y: 127
     FONT: generale-mono/GeneraleMonoA.ttf
@@ -23,7 +24,8 @@ static_text:
     FONT_COLOR: 255, 239, 8
     BACKGROUND_IMAGE: background.png
   GPU_MODEL:
-    TEXT: Your GPU model here
+    TEXT: NVIDIA GeForce RTX 3090
+
     X: 50
     Y: 215
     FONT: generale-mono/GeneraleMonoA.ttf
@@ -31,7 +33,7 @@ static_text:
     FONT_COLOR: 255, 239, 8
     BACKGROUND_IMAGE: background.png
   RAM_MODEL:
-    TEXT: Your RAM model here
+    TEXT: DDR4 64GB (4x16GB) 3600MHz
     X: 50
     Y: 303
     FONT: generale-mono/GeneraleMonoA.ttf
