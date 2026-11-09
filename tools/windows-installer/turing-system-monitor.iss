@@ -91,6 +91,9 @@ Name: "{group}\Turing System Monitor"; Filename: "{app}\configure.exe"
 [Registry]
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Turing System Monitor"; ValueData: """{app}\main.exe"""; Flags: uninsdeletevalue; Tasks: startup
 
+[Run]
+Filename: "{app}\main.exe"; Description: "Launch Turing System Monitor"; Flags: postinstall nowait skipifsilent
+
 [Code]
 (* Detect if the program is already installed or if it is the first installation *)
 function IsUpgrade: Boolean;

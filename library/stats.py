@@ -122,6 +122,50 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
     )
 
 
+def _format_themed_rate(theme_data, rate):
+    decimals = int(theme_data.get("DECIMALS", 1))
+    max_digits = theme_data.get("MAX_VALUE_DIGITS")
+
+    if max_digits:
+        max_digits = int(max_digits)
+        threshold = 10 ** max_digits
+        units = ("B", "K", "M", "G", "T", "P", "E")
+        value = max(float(rate), 0.0)
+        unit_index = 0
+        while value >= threshold and unit_index < len(units) - 1:
+            value /= threshold
+            unit_index += 1
+        rounded_value = round(value, decimals)
+        while rounded_value >= threshold and unit_index < len(units) - 1:
+            value /= threshold
+            unit_index += 1
+            rounded_value = round(value, decimals)
+        number = f"{rounded_value:.{decimals}f}"
+        symbol = units[unit_index]
+    else:
+        formatted = bytes2human(rate, f"%(value).{decimals}f %(symbol)s")
+        number, symbol = formatted.split(" ", 1)
+
+    if theme_data.get("BYTE_UNITS", False):
+        unit = "B/s" if symbol == "B" else f"{symbol}B/s"
+    else:
+        unit = f"{symbol}/s"
+    return number, unit
+
+
+def display_themed_rate(theme_data, rate):
+    number, unit = _format_themed_rate(theme_data, rate)
+    if "VALUE" in theme_data or "UNIT" in theme_data:
+        display_themed_value(theme_data.get("VALUE", {}), number)
+        display_themed_value(theme_data.get("UNIT", {}), unit)
+    else:
+        display_themed_value(
+            theme_data=theme_data,
+            value=f"{number} {unit}",
+            min_size=10
+        )
+
+
 def display_themed_percent_value(theme_data, value):
     display_themed_value(
         theme_data=theme_data,
@@ -697,11 +741,7 @@ class Disk:
 
         for key, rate in (("READ_RATE", read_rate), ("WRITE_RATE", write_rate)):
             rate_theme_data = disk_theme_data.get(key, {}).get("TEXT", {})
-            display_themed_value(
-                theme_data=rate_theme_data,
-                value=bytes2human(rate, '%(value).1f %(symbol)s/s'),
-                min_size=10
-            )
+            display_themed_rate(rate_theme_data, rate)
 
 
 class Net:
@@ -752,24 +792,7 @@ class Net:
 
     @staticmethod
     def _show_themed_tax_rate(theme_data, rate):
-        decimals = theme_data.get("DECIMALS", 1)
-        formatted_rate = bytes2human(rate, f"%(value).{decimals}f %(symbol)s")
-        value, symbol = formatted_rate.split(" ", 1)
-
-        if theme_data.get("BYTE_UNITS", False):
-            unit = "B/s" if symbol == "B" else f"{symbol}B/s"
-        else:
-            unit = f"{symbol}/s"
-
-        if "VALUE" in theme_data or "UNIT" in theme_data:
-            display_themed_value(theme_data.get("VALUE", {}), value)
-            display_themed_value(theme_data.get("UNIT", {}), unit)
-        else:
-            display_themed_value(
-                theme_data=theme_data,
-                value=f"{value} {unit}",
-                min_size=10
-            )
+        display_themed_rate(theme_data, rate)
 
 
 class Date:
