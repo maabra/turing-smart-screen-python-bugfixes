@@ -7,7 +7,7 @@
 
 #define MyAppName "Turing System Monitor"
 #define MyAppVersion GetStringFileInfo(SourceDir + "main.exe", PRODUCT_VERSION)
-#define MyAppPublisher "Matthieu Houdebine"
+#define MyAppPublisher "maabra"
 #define MyAppURL "https://github.com/mathoudebine/turing-smart-screen-python"
 
 [Setup]
@@ -17,6 +17,11 @@ AppId={{5D52BFDE-9A40-4BFA-84F8-89A64B01A2AC}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoDescription=Turing System Monitor Setup
+VersionInfoProductName={#MyAppName}
+VersionInfoProductVersion={#MyAppVersion}
+VersionInfoVersion={#MyAppVersion}.0
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}/wiki
 AppUpdatesURL={#MyAppURL}/releases
@@ -24,7 +29,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputBaseFilename=turing-system-monitor-{#MyAppVersion}-windows
 AllowNoIcons=yes
-PrivilegesRequired=lowest
+PrivilegesRequired=admin
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -69,6 +74,9 @@ Name: "program"; Description: "Turing System Monitor software"; Flags: fixed; Ty
 Name: "themes"; Description: "Default themes (local changes will be lost! - custom themes are preserved)"; Types: default; Flags: disablenouninstallwarning
 Name: "config"; Description: "Default configuration"; Types: default; Flags: disablenouninstallwarning
 
+[Tasks]
+Name: "startup"; Description: "Start Turing System Monitor when I sign in to Windows"; GroupDescription: "Additional options:"; Flags: checkedonce
+
 [Files]
 Source: "{#SourceDir}*"; Excludes: "config.yaml,themes"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: program
 Source: "{#SourceDir}config.yaml"; DestDir: "{app}"; Flags: ignoreversion; Components: config
@@ -79,6 +87,13 @@ Source: "{#SourceDir}res\themes\*"; Excludes: "--Theme examples"; DestDir: "{app
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{group}\Turing System Monitor"; Filename: "{app}\configure.exe"
+
+[Run]
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""$u=[Security.Principal.WindowsIdentity]::GetCurrent().Name; $a=New-ScheduledTaskAction -Execute '{app}\main.exe' -WorkingDirectory '{app}'; $t=New-ScheduledTaskTrigger -AtLogOn -User $u; $p=New-ScheduledTaskPrincipal -UserId $u -LogonType Interactive -RunLevel Highest; Register-ScheduledTask -TaskName 'TuringSystemMonitor' -Action $a -Trigger $t -Principal $p -Force"""; Flags: runhidden waituntilterminated; Tasks: startup
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""Unregister-ScheduledTask -TaskName 'TuringSystemMonitor' -Confirm:$false -ErrorAction SilentlyContinue"""; Flags: runhidden waituntilterminated; Check: not WizardIsTaskSelected('startup')
+
+[UninstallRun]
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""Unregister-ScheduledTask -TaskName 'TuringSystemMonitor' -Confirm:$false -ErrorAction SilentlyContinue"""; Flags: runhidden waituntilterminated
 
 [Code]
 (* Detect if the program is already installed or if it is the first installation *)

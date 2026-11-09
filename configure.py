@@ -300,6 +300,8 @@ class TuringConfigWindow:
         self.theme_preview = ttk.Label(self.window)
         self.theme_preview.place(x=10, y=10)
 
+        self.app_author = ttk.Label(self.window, text="Author: @maabra", foreground=LINK_TEXT_COLOR, cursor="hand2")
+        self.app_author.bind("<Button-1>", lambda e: webbrowser.open_new_tab("https://github.com/maabra"))
         self.theme_author = ttk.Label(self.window)
 
         sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
@@ -385,10 +387,7 @@ class TuringConfigWindow:
         try:
             version = open(VERSION_FILE).readline()
         except:
-            try:
-                version = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8')
-            except:
-                version = "0.0.0"
+            version = "0.4.0"
 
         version_label = ttk.Label(self.window, text=version, foreground=DISABLED_TEXT_COLOR)
         version_label.place(x=5, y=550)
@@ -451,7 +450,7 @@ class TuringConfigWindow:
             self.theme_preview.config(image=self.theme_preview_img)
 
             author_name = theme_data.get('author', 'unknown')
-            self.theme_author.config(text="Author: " + author_name)
+            self.theme_author.config(text="Theme: " + author_name)
             if author_name.startswith("@"):
                 self.theme_author.config(foreground=LINK_TEXT_COLOR, cursor="hand2")
                 self.theme_author.bind("<Button-1>",
@@ -459,7 +458,9 @@ class TuringConfigWindow:
             else:
                 self.theme_author.config(foreground=DISABLED_TEXT_COLOR, cursor="")
                 self.theme_author.unbind("<Button-1>")
-            self.theme_author.place(x=10, y=self.theme_preview_img.height() + 15)
+            author_y = self.theme_preview_img.height() + 15
+            self.app_author.place(x=10, y=author_y)
+            self.theme_author.place(x=125, y=author_y)
 
     def load_config_values(self):
         with open(MAIN_DIRECTORY / "config.yaml", "rt", encoding='utf8') as stream:
