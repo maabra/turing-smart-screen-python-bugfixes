@@ -94,6 +94,15 @@ class Memory(sensors.Memory):
 
 
 class Disk(sensors.Disk):
+    _read_bytes = 0
+    _write_bytes = 0
+
+    @staticmethod
+    def disk_io_counters() -> Tuple[int, int]:
+        Disk._read_bytes += random.randint(0, 1000000)
+        Disk._write_bytes += random.randint(0, 1000000)
+        return Disk._read_bytes, Disk._write_bytes
+
     @staticmethod
     def disk_usage_percent() -> float:
         return random.uniform(0, 100)

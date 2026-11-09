@@ -29,7 +29,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputBaseFilename=turing-system-monitor-{#MyAppVersion}-windows
 AllowNoIcons=yes
-PrivilegesRequired=admin
+PrivilegesRequired=lowest
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -88,12 +88,8 @@ Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{group}\Turing System Monitor"; Filename: "{app}\configure.exe"
 
-[Run]
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""$u=[Security.Principal.WindowsIdentity]::GetCurrent().Name; $a=New-ScheduledTaskAction -Execute '{app}\main.exe' -WorkingDirectory '{app}'; $t=New-ScheduledTaskTrigger -AtLogOn -User $u; $p=New-ScheduledTaskPrincipal -UserId $u -LogonType Interactive -RunLevel Highest; Register-ScheduledTask -TaskName 'TuringSystemMonitor' -Action $a -Trigger $t -Principal $p -Force"""; Flags: runhidden waituntilterminated; Tasks: startup
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""Unregister-ScheduledTask -TaskName 'TuringSystemMonitor' -Confirm:$false -ErrorAction SilentlyContinue"""; Flags: runhidden waituntilterminated; Check: not WizardIsTaskSelected('startup')
-
-[UninstallRun]
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""Unregister-ScheduledTask -TaskName 'TuringSystemMonitor' -Confirm:$false -ErrorAction SilentlyContinue"""; Flags: runhidden waituntilterminated
+[Registry]
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Turing System Monitor"; ValueData: """{app}\main.exe"""; Flags: uninsdeletevalue; Tasks: startup
 
 [Code]
 (* Detect if the program is already installed or if it is the first installation *)
@@ -223,4 +219,19 @@ begin
   end;
   
   CreatePagePawnIO();
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode: Integer;
+begin
+  if CurStep = ssPostInstall then
+  begin
+    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'TuringSystemMonitor');
+    if not WizardIsTaskSelected('startup') then
+      RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Turing System Monitor');
+    { Remove the scheduled-task registration used by earlier builds. }
+    Exec(ExpandConstant('{sys}\schtasks.exe'), '/Delete /TN "TuringSystemMonitor" /F', '', SW_HIDE,
+      ewWaitUntilTerminated, ResultCode);
+  end;
 end;

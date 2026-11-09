@@ -29,6 +29,7 @@ import os
 import platform
 import random
 import sys
+import time
 from typing import List
 
 import babel.dates
@@ -646,6 +647,8 @@ class Memory:
 
 class Disk:
     last_values_disk_usage = []
+    last_io_counters = None
+    last_io_timestamp = None
 
     @classmethod
     def stats(cls):
@@ -680,6 +683,25 @@ class Disk:
             min_size=5,
             unit=" G"
         )
+
+        io_counters = sensors.Disk.disk_io_counters()
+        io_timestamp = time.monotonic()
+        read_rate = write_rate = 0
+        if cls.last_io_counters is not None and cls.last_io_timestamp is not None:
+            elapsed = io_timestamp - cls.last_io_timestamp
+            if elapsed > 0:
+                read_rate = max(0, io_counters[0] - cls.last_io_counters[0]) / elapsed
+                write_rate = max(0, io_counters[1] - cls.last_io_counters[1]) / elapsed
+        cls.last_io_counters = io_counters
+        cls.last_io_timestamp = io_timestamp
+
+        for key, rate in (("READ_RATE", read_rate), ("WRITE_RATE", write_rate)):
+            rate_theme_data = disk_theme_data.get(key, {}).get("TEXT", {})
+            display_themed_value(
+                theme_data=rate_theme_data,
+                value=bytes2human(rate, '%(value).1f %(symbol)s/s'),
+                min_size=10
+            )
 
 
 class Net:
@@ -730,11 +752,24 @@ class Net:
 
     @staticmethod
     def _show_themed_tax_rate(theme_data, rate):
-        display_themed_value(
-            theme_data=theme_data,
-            value=f"{bytes2human(rate, '%(value).1f %(symbol)s/s')}",
-            min_size=10
-        )
+        decimals = theme_data.get("DECIMALS", 1)
+        formatted_rate = bytes2human(rate, f"%(value).{decimals}f %(symbol)s")
+        value, symbol = formatted_rate.split(" ", 1)
+
+        if theme_data.get("BYTE_UNITS", False):
+            unit = "B/s" if symbol == "B" else f"{symbol}B/s"
+        else:
+            unit = f"{symbol}/s"
+
+        if "VALUE" in theme_data or "UNIT" in theme_data:
+            display_themed_value(theme_data.get("VALUE", {}), value)
+            display_themed_value(theme_data.get("UNIT", {}), unit)
+        else:
+            display_themed_value(
+                theme_data=theme_data,
+                value=f"{value} {unit}",
+                min_size=10
+            )
 
 
 class Date:

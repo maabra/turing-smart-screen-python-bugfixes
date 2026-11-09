@@ -109,6 +109,10 @@ class Memory(sensors.Memory):
 
 class Disk(sensors.Disk):
     @staticmethod
+    def disk_io_counters() -> Tuple[int, int]:
+        return 0, 0
+
+    @staticmethod
     def disk_usage_percent() -> float:
         return PERCENTAGE_SENSOR_VALUE
 

@@ -31,17 +31,61 @@ check_python_version()
 
 import os
 import sys
+import ctypes
+import subprocess
+import platform
+from pathlib import Path
+
+
+def request_admin_if_needed() -> bool:
+    """Relaunch with a UAC prompt when Windows sensor mode requires elevation."""
+    if platform.system() != "Windows":
+        return True
+
+    sensor_mode = config.CONFIG_DATA["config"].get("HW_SENSORS", "AUTO")
+    if sensor_mode not in ("AUTO", "LHM"):
+        return True
+
+    try:
+        shell32 = ctypes.WinDLL("shell32", use_last_error=True)
+        is_user_an_admin = shell32.IsUserAnAdmin
+        is_user_an_admin.restype = ctypes.c_int
+        if is_user_an_admin():
+            return True
+    except Exception as exc:
+        logger.error("Cannot check Windows administrator status: %s", exc)
+        return False
+
+    if getattr(sys, "frozen", False):
+        executable = sys.executable
+        arguments = sys.argv[1:]
+    else:
+        executable = sys.executable
+        arguments = [str(Path(sys.argv[0]).resolve()), *sys.argv[1:]]
+
+    params = subprocess.list2cmdline(arguments)
+    shell_execute = shell32.ShellExecuteW
+    shell_execute.argtypes = (
+        ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_wchar_p,
+        ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_int,
+    )
+    shell_execute.restype = ctypes.c_void_p
+    result = shell_execute(
+        None, "runas", executable, params or None, str(Path(__file__).resolve().parent), 1
+    )
+    if not result or result <= 32:
+        logger.warning("Elevation was not started (ShellExecute result %s)", result)
+    return False
 
 try:
     import argparse
     import atexit
     import locale
-    import platform
     import signal
-    import subprocess
     import time
-    from pathlib import Path
     from PIL import Image
+
+    from library import config
 
     if platform.system() == 'Windows':
         import win32api
@@ -49,8 +93,6 @@ try:
         import win32gui
 
     from library.log import logger
-    import library.scheduler as scheduler
-    from library.display import display
 
 except Exception as e:
     print("""Import error: %s
@@ -72,6 +114,14 @@ MAIN_DIRECTORY = Path(__file__).resolve().parent
 DELAY_BETWEEN_THREADS = 0.25
 
 if __name__ == "__main__":
+
+    # Request elevation before importing the scheduler/display stack: those imports
+    # can open the serial port and load LibreHardwareMonitor.
+    if not request_admin_if_needed():
+        sys.exit(0)
+
+    import library.scheduler as scheduler
+    from library.display import display
 
     # Apply system locale to this program
     locale.setlocale(locale.LC_ALL, '')

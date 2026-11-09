@@ -243,6 +243,24 @@ def get_net_if():
     return if_list
 
 
+def get_disk_drives():
+    """Return display labels mapped to mount paths for selectable disk volumes."""
+    drives = {"Automatic (system drive)": "AUTO"}
+    for partition in psutil.disk_partitions(all=False):
+        mountpoint = partition.mountpoint
+        if not mountpoint:
+            continue
+        try:
+            psutil.disk_usage(mountpoint)
+        except (OSError, PermissionError):
+            continue
+
+        label = f"{mountpoint} ({partition.fstype or partition.device})"
+        drives[label] = mountpoint
+
+    return drives
+
+
 def get_fans():
     fan_list = list()
     auto_detected_cpu_fan = "None"
@@ -279,7 +297,7 @@ class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("820x590")
+        self.window.geometry("820x630")
         self.window.iconphoto(True, PhotoImage(file=str(
             MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png")))  # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
@@ -369,6 +387,12 @@ class TuringConfigWindow:
         self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
         self.wl_cb.place(x=550, y=415, width=250)
 
+        self.disk_label = ttk.Label(self.window, text='Drive for disk capacity')
+        self.disk_label.place(x=370, y=500)
+        self.disk_paths = get_disk_drives()
+        self.disk_cb = ttk.Combobox(self.window, values=list(self.disk_paths), state='readonly')
+        self.disk_cb.place(x=550, y=495, width=250)
+
         # For Windows platform only
         self.lhm_admin_warning = ttk.Label(self.window,
                                            text="❌ Restart as admin. or select another Hardware monitoring",
@@ -390,32 +414,32 @@ class TuringConfigWindow:
             version = "0.4.0"
 
         version_label = ttk.Label(self.window, text=version, foreground=DISABLED_TEXT_COLOR)
-        version_label.place(x=5, y=550)
+        version_label.place(x=5, y=600)
 
         self.weather_ping_emoji = emoji_to_img(20, "⛅")
         self.weather_ping_btn = ttk.Button(self.window, text="Weather\n& Ping", image=self.weather_ping_emoji,
                                            compound="left", command=lambda: self.on_weatherping_click())
-        self.weather_ping_btn.place(x=80, y=520, height=60, width=130)
+        self.weather_ping_btn.place(x=80, y=555, height=60, width=130)
 
         self.open_theme_emoji = emoji_to_img(20, "📂")
         self.open_theme_folder_btn = ttk.Button(self.window, text="Open themes\nfolder", image=self.open_theme_emoji,
                                                 compound="left", command=lambda: self.on_open_theme_folder_click())
-        self.open_theme_folder_btn.place(x=220, y=520, height=60, width=130)
+        self.open_theme_folder_btn.place(x=220, y=555, height=60, width=130)
 
         self.edit_theme_emoji = emoji_to_img(20, "🎨")
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", image=self.edit_theme_emoji, compound="left",
                                          command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=360, y=520, height=60, width=130)
+        self.edit_theme_btn.place(x=360, y=555, height=60, width=130)
 
         self.save_emoji = emoji_to_img(20, "💾")
         self.save_btn = ttk.Button(self.window, text="Save settings", image=self.save_emoji, compound="left",
                                    command=lambda: self.on_save_click())
-        self.save_btn.place(x=500, y=520, height=60, width=130)
+        self.save_btn.place(x=500, y=555, height=60, width=130)
 
         self.save_run_emoji = emoji_to_img(20, "▶️")
         self.save_run_btn = ttk.Button(self.window, text="Save and run", image=self.save_run_emoji, compound="left",
                                        command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=640, y=520, height=60, width=140)
+        self.save_run_btn.place(x=640, y=555, height=60, width=140)
 
         if sys.platform == "win32":
             self.startup_var = BooleanVar(value=windows_startup.is_enabled())
@@ -425,7 +449,7 @@ class TuringConfigWindow:
                 variable=self.startup_var,
                 command=self.on_startup_change,
             )
-            self.startup_cb.place(x=500, y=475)
+            self.startup_cb.place(x=500, y=525)
 
         self.config = None
         self.load_config_values()
@@ -499,6 +523,16 @@ class TuringConfigWindow:
         except:
             self.wl_cb.current(0)
 
+        saved_disk_path = self.config['config'].get('DISK_PATH', 'AUTO')
+        selected_disk = next(
+            (label for label, path in self.disk_paths.items() if path == saved_disk_path), None
+        )
+        if selected_disk is None and saved_disk_path != 'AUTO':
+            selected_disk = f"{saved_disk_path} (not detected)"
+            self.disk_paths[selected_disk] = saved_disk_path
+            self.disk_cb.configure(values=list(self.disk_paths))
+        self.disk_cb.set(selected_disk or next(iter(self.disk_paths)))
+
         try:
             if self.config['config']['COM_PORT'] == "AUTO":
                 self.com_cb.current(0)
@@ -568,6 +602,7 @@ class TuringConfigWindow:
             self.config['config']['WLO'] = ""
         else:
             self.config['config']['WLO'] = self.wl_cb.get()
+        self.config['config']['DISK_PATH'] = self.disk_paths[self.disk_cb.get()]
         if self.com_cb.current() == 0:
             self.config['config']['COM_PORT'] = "AUTO"
         else:

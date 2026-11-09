@@ -34,6 +34,9 @@ config:
   # Value must be 'controller/fan' e.g. 'nct6798/fan2'. Use configuration wizard for help in selection
   CPU_FAN: AUTO
 
+  # Disk drive used for disk capacity statistics (AUTO uses the system drive)
+  DISK_PATH: AUTO
+
   # Address used for ping sensor. Can be internal/external IP (e.g. 8.8.8.8 or 192.168.0.1) or hostname (google.com)
   PING: 8.8.8.8
 

@@ -33,6 +33,7 @@ import GPUtil
 # CPU & disk sensors
 import psutil
 
+from library import config
 import library.sensors.sensors as sensors
 from library.sensors.disk import usage_path
 from library.log import logger
@@ -455,7 +456,16 @@ class Memory(sensors.Memory):
 class Disk(sensors.Disk):
     @staticmethod
     def _usage():
-        return psutil.disk_usage(usage_path())
+        disk_path = config.CONFIG_DATA["config"].get("DISK_PATH", "AUTO")
+        return psutil.disk_usage(usage_path(disk_path))
+
+    @staticmethod
+    def disk_io_counters() -> Tuple[int, int]:
+        try:
+            counters = psutil.disk_io_counters()
+            return (counters.read_bytes, counters.write_bytes) if counters else (0, 0)
+        except:
+            return 0, 0
 
     @staticmethod
     def disk_usage_percent() -> float:

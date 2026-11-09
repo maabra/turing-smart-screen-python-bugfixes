@@ -105,6 +105,11 @@ class Memory(ABC):
 class Disk(ABC):
     @staticmethod
     @abstractmethod
+    def disk_io_counters() -> Tuple[int, int]:  # Read and write bytes since boot
+        pass
+
+    @staticmethod
+    @abstractmethod
     def disk_usage_percent() -> float:
         pass
 
