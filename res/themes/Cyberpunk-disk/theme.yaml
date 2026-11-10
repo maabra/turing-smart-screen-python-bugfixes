@@ -56,7 +56,7 @@ static_text:
     BACKGROUND_IMAGE: background.png
   DOWNLOAD_LABEL:
     TEXT: DOWNLOAD
-    X: 28
+    X: 43
     Y: 429
     FONT: generale-mono/GeneraleMonoA.ttf
     FONT_SIZE: 15
@@ -209,10 +209,11 @@ STATS:
       TEXT:
         SHOW: True
         DECIMALS: 0
+        BYTE_UNITS: False
         MAX_VALUE_DIGITS: 3
-        X: 160
+        X: 140
         Y: 338
-        WIDTH: 145
+        WIDTH: 165
         ALIGN: right
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 23
@@ -222,10 +223,11 @@ STATS:
       TEXT:
         SHOW: True
         DECIMALS: 0
+        BYTE_UNITS: False
         MAX_VALUE_DIGITS: 3
-        X: 160
+        X: 140
         Y: 383
-        WIDTH: 145
+        WIDTH: 165
         ALIGN: right
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 23
@@ -242,18 +244,19 @@ STATS:
           MAX_VALUE_DIGITS: 3
           VALUE:
             SHOW: True
-            X: 180
-            Y: 421
+            MIN_SIZE: 3
+            X: 185
+            Y: 430
             WIDTH: 75
             FONT: generale-mono/GeneraleMonoA.ttf
-            FONT_SIZE: 37
+            FONT_SIZE: 35
             FONT_COLOR: 2, 216, 243
             BACKGROUND_IMAGE: background.png
             ALIGN: right
           UNIT:
             SHOW: True
-            X: 260
-            Y: 434
+            X: 270
+            Y: 430
             FONT: generale-mono/GeneraleMonoA.ttf
             FONT_SIZE: 14
             FONT_COLOR: 2, 216, 243

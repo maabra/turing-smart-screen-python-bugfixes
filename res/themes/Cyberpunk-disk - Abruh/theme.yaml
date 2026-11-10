@@ -15,8 +15,7 @@ static_images:
     HEIGHT: 480
 static_text:
   CPU_MODEL:
-    TEXT: AMD Ryzen 7 5700X3D
-
+    TEXT: Your CPU model here
     X: 50
     Y: 127
     FONT: generale-mono/GeneraleMonoA.ttf
@@ -24,8 +23,7 @@ static_text:
     FONT_COLOR: 255, 239, 8
     BACKGROUND_IMAGE: background.png
   GPU_MODEL:
-    TEXT: NVIDIA GeForce RTX 3090
-
+    TEXT: Your GPU model here
     X: 50
     Y: 215
     FONT: generale-mono/GeneraleMonoA.ttf
@@ -33,7 +31,7 @@ static_text:
     FONT_COLOR: 255, 239, 8
     BACKGROUND_IMAGE: background.png
   RAM_MODEL:
-    TEXT: DDR4 64GB (4x16GB) 3600MHz
+    TEXT: Your RAM model here
     X: 50
     Y: 303
     FONT: generale-mono/GeneraleMonoA.ttf
@@ -210,8 +208,13 @@ STATS:
     READ_RATE:
       TEXT:
         SHOW: True
-        X: 160
+        DECIMALS: 0
+        BYTE_UNITS: False
+        MAX_VALUE_DIGITS: 3
+        X: 140
         Y: 338
+        WIDTH: 165
+        ALIGN: right
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 23
         FONT_COLOR: 2, 216, 243
@@ -219,8 +222,13 @@ STATS:
     WRITE_RATE:
       TEXT:
         SHOW: True
-        X: 160
+        DECIMALS: 0
+        BYTE_UNITS: False
+        MAX_VALUE_DIGITS: 3
+        X: 140
         Y: 383
+        WIDTH: 165
+        ALIGN: right
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 23
         FONT_COLOR: 2, 216, 243
@@ -231,12 +239,28 @@ STATS:
       DOWNLOAD:
         TEXT:
           SHOW: True
-          X: 160
-          Y: 428
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 23
-          FONT_COLOR: 2, 216, 243
-          BACKGROUND_IMAGE: background.png
+          DECIMALS: 0
+          BYTE_UNITS: False
+          MAX_VALUE_DIGITS: 3
+          VALUE:
+            SHOW: True
+            MIN_SIZE: 3
+            X: 185
+            Y: 430
+            WIDTH: 75
+            FONT: generale-mono/GeneraleMonoA.ttf
+            FONT_SIZE: 35
+            FONT_COLOR: 2, 216, 243
+            BACKGROUND_IMAGE: background.png
+            ALIGN: right
+          UNIT:
+            SHOW: True
+            X: 270
+            Y: 430
+            FONT: generale-mono/GeneraleMonoA.ttf
+            FONT_SIZE: 14
+            FONT_COLOR: 2, 216, 243
+            BACKGROUND_IMAGE: background.png
   DATE:
     INTERVAL: 1
     DAY:
