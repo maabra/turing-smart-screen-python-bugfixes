@@ -411,7 +411,7 @@ class TuringConfigWindow:
         try:
             version = open(VERSION_FILE).readline()
         except:
-            version = "0.5.0"
+            version = "0.6.0"
 
         version_label = ttk.Label(self.window, text=version, foreground=DISABLED_TEXT_COLOR)
         version_label.place(x=5, y=600)
