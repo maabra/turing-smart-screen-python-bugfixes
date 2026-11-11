@@ -297,6 +297,7 @@ if __name__ == "__main__":
             scheduler.GpuStats(); time.sleep(DELAY_BETWEEN_THREADS)
         scheduler.MemoryStats(); time.sleep(DELAY_BETWEEN_THREADS)
         scheduler.DiskStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.PowerStats(); time.sleep(DELAY_BETWEEN_THREADS)
         scheduler.NetStats(); time.sleep(DELAY_BETWEEN_THREADS)
         scheduler.DateStats(); time.sleep(DELAY_BETWEEN_THREADS)
         scheduler.SystemUptimeStats(); time.sleep(DELAY_BETWEEN_THREADS)
