@@ -211,28 +211,52 @@ STATS:
         DECIMALS: 0
         BYTE_UNITS: False
         MAX_VALUE_DIGITS: 3
-        X: 140
-        Y: 338
-        WIDTH: 165
-        ALIGN: right
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 2, 216, 243
-        BACKGROUND_IMAGE: background.png
+        VALUE:
+          SHOW: True
+          X: 140
+          Y: 338
+          WIDTH: 102
+          ALIGN: right
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 2, 216, 243
+          BACKGROUND_IMAGE: background.png
+        UNIT:
+          SHOW: True
+          X: 245
+          Y: 338
+          WIDTH: 60
+          ALIGN: left
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 2, 216, 243
+          BACKGROUND_IMAGE: background.png
     WRITE_RATE:
       TEXT:
         SHOW: True
         DECIMALS: 0
         BYTE_UNITS: False
         MAX_VALUE_DIGITS: 3
-        X: 140
-        Y: 383
-        WIDTH: 165
-        ALIGN: right
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 2, 216, 243
-        BACKGROUND_IMAGE: background.png
+        VALUE:
+          SHOW: True
+          X: 140
+          Y: 383
+          WIDTH: 102
+          ALIGN: right
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 2, 216, 243
+          BACKGROUND_IMAGE: background.png
+        UNIT:
+          SHOW: True
+          X: 245
+          Y: 383
+          WIDTH: 60
+          ALIGN: left
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 2, 216, 243
+          BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
     ETH:

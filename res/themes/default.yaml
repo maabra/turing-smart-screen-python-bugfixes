@@ -165,6 +165,10 @@ STATS:
     FREE:
       TEXT:
         SHOW: False
+  POWER:
+    INTERVAL: 0
+    TEXT:
+      SHOW: False
   NET:
     INTERVAL: 0
     WLO:

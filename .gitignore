@@ -146,4 +146,5 @@ external/LibreHardwareMonitor/LibreHardwareMonitorLib.sys
 turing-system-monitor-windows
 
 build_installer.py
+set_version.py
 .venv-build

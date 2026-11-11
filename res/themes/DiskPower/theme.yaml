@@ -1,0 +1,85 @@
+# Cyberpunk disk activity and PC power theme.
+author: "Inspired by Cyberpunk-disk"
+
+display:
+  DISPLAY_SIZE: 3.5"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 255, 239, 8
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 320
+    HEIGHT: 480
+
+static_text:
+  READ_LABEL:
+    TEXT: "READ"
+    X: 35
+    Y: 322
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 13
+    FONT_COLOR: 255, 239, 8
+    BACKGROUND_IMAGE: background.png
+  WRITE_LABEL:
+    TEXT: "WRITE"
+    X: 176
+    Y: 322
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 13
+    FONT_COLOR: 255, 239, 8
+    BACKGROUND_IMAGE: background.png
+  POWER_LABEL:
+    TEXT: "PC POWER"
+    X: 40
+    Y: 378
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    BACKGROUND_IMAGE: background.png
+
+STATS:
+  DISK:
+    INTERVAL: 1
+    READ_RATE:
+      TEXT:
+        SHOW: True
+        DECIMALS: 1
+        BYTE_UNITS: True
+        MAX_VALUE_DIGITS: 2
+        X: 30
+        Y: 340
+        WIDTH: 130
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 2, 216, 243
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left
+    WRITE_RATE:
+      TEXT:
+        SHOW: True
+        DECIMALS: 1
+        BYTE_UNITS: True
+        MAX_VALUE_DIGITS: 2
+        X: 172
+        Y: 340
+        WIDTH: 135
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 2, 216, 243
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left
+  POWER:
+    INTERVAL: 1
+    TEXT:
+      SHOW: True
+      X: 170
+      Y: 384
+      WIDTH: 125
+      FONT: generale-mono/GeneraleMonoA.ttf
+      FONT_SIZE: 22
+      FONT_COLOR: 2, 216, 243
+      BACKGROUND_IMAGE: background.png
+      ALIGN: left

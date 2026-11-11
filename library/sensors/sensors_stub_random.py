@@ -27,6 +27,10 @@ from typing import Tuple
 import library.sensors.sensors as sensors
 
 
+def power_watts() -> float:
+    return random.uniform(45.0, 220.0)
+
+
 random.seed(10)
 
 class Cpu(sensors.Cpu):

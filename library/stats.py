@@ -744,6 +744,21 @@ class Disk:
             display_themed_rate(rate_theme_data, rate)
 
 
+class Power:
+    @staticmethod
+    def stats():
+        power_theme_data = config.THEME_DATA['STATS'].get('POWER', {})
+        if not power_theme_data.get('TEXT', {}).get('SHOW', False):
+            return
+        power_reader = getattr(sensors, 'power_watts', None)
+        watts = power_reader() if power_reader else math.nan
+        display_themed_value(
+            power_theme_data['TEXT'],
+            round(watts) if math.isfinite(watts) else 'N/A',
+            unit=' W' if math.isfinite(watts) else ''
+        )
+
+
 class Net:
     last_values_wlo_upload = []
     last_values_wlo_download = []

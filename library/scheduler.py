@@ -144,6 +144,12 @@ def DiskStats():
     stats.Disk.stats()
 
 
+@async_job("Power_Stats")
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('POWER', {}).get("INTERVAL", 0)).total_seconds())
+def PowerStats():
+    stats.Power.stats()
+
+
 @async_job("Net_Stats")
 @schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('NET', {}).get("INTERVAL", 0)).total_seconds())
 def NetStats():

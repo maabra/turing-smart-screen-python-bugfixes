@@ -38,6 +38,11 @@ GPU_MEM_TOTAL_SIZE_GB = 32
 NETWORK_SPEED_BYTES = 1061000000
 GPU_FPS = 120
 GPU_FREQ_MHZ = 1500.0
+POWER_WATTS = 125.0
+
+
+def power_watts() -> float:
+    return POWER_WATTS
 
 
 class Cpu(sensors.Cpu):

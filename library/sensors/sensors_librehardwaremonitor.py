@@ -74,7 +74,7 @@ handle.IsMotherboardEnabled = True  # For CPU Fan Speed
 handle.IsControllerEnabled = True  # For CPU Fan Speed
 handle.IsNetworkEnabled = True
 handle.IsStorageEnabled = True
-handle.IsPsuEnabled = False
+handle.IsPsuEnabled = True
 handle.Open()
 for hardware in handle.Hardware:
     if hardware.HardwareType == Hardware.HardwareType.Cpu:
@@ -100,6 +100,28 @@ def get_hw_and_update(hwtype: Hardware.HardwareType, name: str = None) -> Hardwa
                 hardware.Update()
                 return hardware
     return None
+
+
+def power_watts() -> float:
+    """Return the best available whole-system power reading in watts."""
+    readings = []
+    for hardware in handle.Hardware:
+        hardware.Update()
+        for sensor in hardware.Sensors:
+            if sensor.SensorType == Hardware.SensorType.Power and sensor.Value is not None:
+                readings.append((str(hardware.Name), str(sensor.Name), float(sensor.Value)))
+    for hardware_name, sensor_name, value in readings:
+        if any(label in (hardware_name + " " + sensor_name).lower()
+               for label in ("system", "total", "psu", "power supply")):
+            return value
+    # A component reading is better than no reading, but it may not represent
+    # the whole PC. Keep the fallback deterministic and prefer CPU package power.
+    for hardware_name, sensor_name, value in readings:
+        if "package" in sensor_name.lower() or "cpu" in hardware_name.lower():
+            return value
+    if readings:
+        return readings[0][2]
+    return math.nan
 
 
 def get_gpu_name() -> str:
